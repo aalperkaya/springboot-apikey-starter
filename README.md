@@ -4,9 +4,9 @@ Spring Security with API Key
 ### Reference Documentation
 For further reference, please consider the following sections:
 
-* [Spring Web](https://docs.spring.io/spring-boot/docs/3.3.3/reference/htmlsingle/index.html#web)
-* [Spring Security](https://docs.spring.io/spring-boot/docs/3.3.3/reference/htmlsingle/index.html#web.security)
-* [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/3.3.3/reference/htmlsingle/index.html#actuator)
+* [Spring Web](https://docs.spring.io/spring-boot/docs/4.0.1/reference/htmlsingle/index.html#web)
+* [Spring Security](https://docs.spring.io/spring-boot/docs/4.0.1/reference/htmlsingle/index.html#web.security)
+* [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/4.0.1/reference/htmlsingle/index.html#actuator)
 
 ### Maven Parent overrides
 

@@ -2,6 +2,7 @@ package springboot.apikey.starter.Config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,8 +21,11 @@ public class SecurityConfiguration {
 
 	private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
 
-	private static final String principalRequestHeader = "X-API-KEY";
-	private static final String principalRequestValue = "testapikey";
+	@Value("${springboot.apikey.header-name}")
+	private String principalRequestHeader;
+
+	@Value("${springboot.apikey.value}")
+	private String principalRequestValue;
 
 //	@Bean
 //	WebSecurityCustomizer webSecurityCustomizer() {
@@ -36,7 +40,7 @@ public class SecurityConfiguration {
 		ApiKeyAuthFilter filter = new ApiKeyAuthFilter(principalRequestHeader);
 		filter.setAuthenticationManager(authentication -> {
 			String principal = (String) authentication.getPrincipal();
-			log.info("ApiKeyAuthFilter " + principal);
+			
 			if (!Objects.equals(principalRequestValue, principal)) {
 				throw new BadCredentialsException("API Key missing or invalid");
 			}
