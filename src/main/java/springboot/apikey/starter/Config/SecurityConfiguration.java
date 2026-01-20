@@ -52,7 +52,7 @@ public class SecurityConfiguration {
 			.sessionManagement( (sm) -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.addFilter(filter)
 			.authorizeHttpRequests(authorize -> authorize
-					.requestMatchers("/test/**", "/actuator/**").permitAll()
+					.requestMatchers("/test/**", "/actuator/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 					.anyRequest().authenticated());
 
 		return http.build();
