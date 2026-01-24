@@ -2,30 +2,35 @@ package springboot.apikey.starter.Config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
+@EnableConfigurationProperties(ApiKeyProperties.class)
 public class SecurityConfiguration {
 
 	private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
 
-	@Value("${springboot.apikey.header-name}")
-	private String principalRequestHeader;
+	private final ApiKeyProperties apiKeyProperties;
 
-	@Value("${springboot.apikey.value}")
-	private String principalRequestValue;
+	public SecurityConfiguration(ApiKeyProperties apiKeyProperties) {
+		this.apiKeyProperties = apiKeyProperties;
+	}
 
 //	@Bean
 //	WebSecurityCustomizer webSecurityCustomizer() {
@@ -37,13 +42,24 @@ public class SecurityConfiguration {
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		
-		ApiKeyAuthFilter filter = new ApiKeyAuthFilter(principalRequestHeader);
+		ApiKeyAuthFilter filter = new ApiKeyAuthFilter(apiKeyProperties.getHeaderName());
 		filter.setAuthenticationManager(authentication -> {
 			String principal = (String) authentication.getPrincipal();
 			
-			if (!Objects.equals(principalRequestValue, principal)) {
+			Optional<ApiKeyProperties.KeyConfig> matchedKey = apiKeyProperties.getKeys().stream()
+					.filter(key -> key.getValue().equals(principal))
+					.findFirst();
+
+			if (matchedKey.isEmpty()) {
 				throw new BadCredentialsException("API Key missing or invalid");
 			}
+
+			ApiKeyProperties.KeyConfig keyConfig = matchedKey.get();
+			List<SimpleGrantedAuthority> authorities = keyConfig.getRoles().stream()
+					.map(SimpleGrantedAuthority::new)
+					.collect(Collectors.toList());
+
+			authentication = new PreAuthenticatedAuthenticationToken(principal, null, authorities);
 			authentication.setAuthenticated(true);
 			return authentication;
 		});
@@ -53,6 +69,7 @@ public class SecurityConfiguration {
 			.addFilter(filter)
 			.authorizeHttpRequests(authorize -> authorize
 					.requestMatchers("/test/**", "/actuator/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+					.requestMatchers("/admin/**").hasRole("ADMIN")
 					.anyRequest().authenticated());
 
 		return http.build();

@@ -24,6 +24,13 @@ public class GreetingControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("Hello,")));
 	}
+
+	@Test
+	public void getGreetingWithAdminKey() throws Exception {
+		mvc.perform(MockMvcRequestBuilders.get("/greeting").header("x-api-key", "adminkey").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Hello,")));
+	}
 	
 	@Test
 	public void failGreeting() throws Exception {
