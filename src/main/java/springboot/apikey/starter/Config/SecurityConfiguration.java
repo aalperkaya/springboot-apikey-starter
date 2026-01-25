@@ -27,9 +27,11 @@ public class SecurityConfiguration {
 	private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
 
 	private final ApiKeyProperties apiKeyProperties;
+	private final ApiKeyAuthenticationEntryPoint authenticationEntryPoint;
 
-	public SecurityConfiguration(ApiKeyProperties apiKeyProperties) {
+	public SecurityConfiguration(ApiKeyProperties apiKeyProperties, ApiKeyAuthenticationEntryPoint authenticationEntryPoint) {
 		this.apiKeyProperties = apiKeyProperties;
+		this.authenticationEntryPoint = authenticationEntryPoint;
 	}
 
 //	@Bean
@@ -67,6 +69,7 @@ public class SecurityConfiguration {
 		http
 			.sessionManagement( (sm) -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.addFilter(filter)
+			.exceptionHandling( (eh) -> eh.authenticationEntryPoint(authenticationEntryPoint))
 			.authorizeHttpRequests(authorize -> authorize
 					.requestMatchers("/test/**", "/actuator/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 					.requestMatchers("/admin/**").hasRole("ADMIN")

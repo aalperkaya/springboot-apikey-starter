@@ -33,6 +33,6 @@ public class AdminControllerTest {
     @Test
     public void adminAccessDeniedWithInvalidKey() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/admin").header("x-api-key", "invalid"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }

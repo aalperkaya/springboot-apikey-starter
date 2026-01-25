@@ -35,13 +35,13 @@ public class GreetingControllerTest {
 	@Test
 	public void failGreeting() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/greeting").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isForbidden());
+				.andExpect(status().isUnauthorized());
 	}
 	
 	@Test
 	public void badCredentials() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/greeting").header("x-api-key", "X").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isForbidden());
+				.andExpect(status().isUnauthorized());
 	}	
 	
 
