@@ -15,6 +15,9 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
+import springboot.apikey.starter.Model.ApiKey;
+import springboot.apikey.starter.Service.ApiKeyService;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,10 +31,12 @@ public class SecurityConfiguration {
 
 	private final ApiKeyProperties apiKeyProperties;
 	private final ApiKeyAuthenticationEntryPoint authenticationEntryPoint;
+	private final ApiKeyService apiKeyService;
 
-	public SecurityConfiguration(ApiKeyProperties apiKeyProperties, ApiKeyAuthenticationEntryPoint authenticationEntryPoint) {
+	public SecurityConfiguration(ApiKeyProperties apiKeyProperties, ApiKeyAuthenticationEntryPoint authenticationEntryPoint, ApiKeyService apiKeyService) {
 		this.apiKeyProperties = apiKeyProperties;
 		this.authenticationEntryPoint = authenticationEntryPoint;
+		this.apiKeyService = apiKeyService;
 	}
 
 //	@Bean
@@ -48,15 +53,13 @@ public class SecurityConfiguration {
 		filter.setAuthenticationManager(authentication -> {
 			String principal = (String) authentication.getPrincipal();
 			
-			Optional<ApiKeyProperties.KeyConfig> matchedKey = apiKeyProperties.getKeys().stream()
-					.filter(key -> key.getValue().equals(principal))
-					.findFirst();
+			Optional<ApiKey> matchedKey = apiKeyService.getApiKey(principal);
 
-			if (matchedKey.isEmpty()) {
-				throw new BadCredentialsException("API Key missing or invalid");
+			if (matchedKey.isEmpty() || !matchedKey.get().isActive()) {
+				throw new BadCredentialsException("API Key missing, invalid, or inactive");
 			}
 
-			ApiKeyProperties.KeyConfig keyConfig = matchedKey.get();
+			ApiKey keyConfig = matchedKey.get();
 			List<SimpleGrantedAuthority> authorities = keyConfig.getRoles().stream()
 					.map(SimpleGrantedAuthority::new)
 					.collect(Collectors.toList());

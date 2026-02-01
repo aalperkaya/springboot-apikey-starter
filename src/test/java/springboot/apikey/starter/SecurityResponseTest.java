@@ -26,7 +26,7 @@ public class SecurityResponseTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status", is(401)))
                 .andExpect(jsonPath("$.error", is("Unauthorized")))
-                .andExpect(jsonPath("$.message", is("API Key missing or invalid")))
+                .andExpect(jsonPath("$.message", is("API Key missing, invalid, or inactive")))
                 .andExpect(jsonPath("$.path", is("/greeting")));
     }
 
@@ -39,7 +39,7 @@ public class SecurityResponseTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status", is(401)))
                 .andExpect(jsonPath("$.error", is("Unauthorized")))
-                .andExpect(jsonPath("$.message", is("API Key missing or invalid")))
+                .andExpect(jsonPath("$.message", is("API Key missing, invalid, or inactive")))
                 .andExpect(jsonPath("$.path", is("/greeting")));
     }
 }

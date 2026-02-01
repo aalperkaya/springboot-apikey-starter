@@ -31,7 +31,7 @@ public class ApiKeyAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         String message = authException.getMessage();
         if ("Full authentication is required to access this resource".equals(message)) {
-            message = "API Key missing or invalid";
+            message = "API Key missing, invalid, or inactive";
         }
 
         Map<String, Object> body = new LinkedHashMap<>();
