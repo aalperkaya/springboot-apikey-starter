@@ -1,16 +1,51 @@
-# springboot-apikey-starter
-Spring Security with API Key
+# Spring Boot API Key Starter
 
-### Reference Documentation
-For further reference, please consider the following sections:
+Spring Boot starter template demonstrating API Key authentication with Role-Based Access Control (RBAC), database persistence, and OpenAPI integration.
 
-* [Spring Web](https://docs.spring.io/spring-boot/docs/4.0.1/reference/htmlsingle/index.html#web)
-* [Spring Security](https://docs.spring.io/spring-boot/docs/4.0.1/reference/htmlsingle/index.html#web.security)
-* [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/4.0.1/reference/htmlsingle/index.html#actuator)
+## Features
 
-### Maven Parent overrides
+- **API Key Authentication**: Secure REST endpoints using custom header-based API keys.
+- **Database Persistence**: Dynamic API key management supporting H2 (default), PostgreSQL, and Oracle.
+- **Role-Based Access Control (RBAC)**: Assign granular roles (e.g., `ROLE_USER`, `ROLE_ADMIN`) to API keys.
+- **OpenAPI 3 (Swagger)**: Built-in API documentation with pre-configured API Key security schemes.
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+## Getting Started
+
+### Prerequisites
+- Java 21+
+- Maven 3.8+
+
+### Running the Application
+By default, the application uses an in-memory H2 database.
+
+```bash
+./mvnw spring-boot:run
+```
+
+To use specific database profiles:
+
+```bash
+# PostgreSQL
+./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres
+
+# Oracle
+./mvnw spring-boot:run -Dspring-boot.run.profiles=oracle
+```
+
+## API Documentation
+Once running, you can access the Swagger UI to explore and test the endpoints:
+- **Swagger UI**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- **OpenAPI Spec**: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+
+### Endpoints
+| Path | Required Role | Description |
+|------|---------------|-------------|
+| `/greeting` | `ROLE_USER` | Simple greeting service. |
+| `/test/sysdate1` | `ROLE_USER` | Returns current system date. |
+| `/admin` | `ROLE_ADMIN` | Protected administrative endpoint. |
+
+## Testing
+
+```bash
+./mvnw test
+```
