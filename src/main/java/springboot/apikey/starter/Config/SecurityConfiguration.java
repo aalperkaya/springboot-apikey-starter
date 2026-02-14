@@ -70,6 +70,7 @@ public class SecurityConfiguration {
 		});
 
 		http
+			.csrf(csrf -> csrf.disable())
 			.sessionManagement( (sm) -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.addFilter(filter)
 			.exceptionHandling( (eh) -> eh.authenticationEntryPoint(authenticationEntryPoint))
